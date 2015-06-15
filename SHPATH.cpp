@@ -61,27 +61,56 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+#define MAXN 10000
+
 int main(){
     int ntc;
     scanf("%d", &ntc);
-    while (ntc--) {
-        ll n;
-        scanf("%lld", &n);
-        --n;
-        ll len = 1;
-        ll total = 0;
-        while (total + (1LL << len) <= n) {
-            total += (1LL << len);
-            ++len;
+    while(ntc--) {
+        int n, q;
+        map<string,int> idx;
+        vector<int> edge[MAXN+5], cost[MAXN+5];
+        scanf("%d", &n);
+        for (int i = 0; i < n; ++i) {
+            int p;
+            string name;
+            cin >> name;
+            idx[name] = i;
+            scanf("%d", &p);
+            for (int j = 0; j < p; ++j) {
+                int a, b;
+                scanf("%d%d", &a, &b);
+                --a;
+                edge[i].PB(a);
+                cost[i].PB(b);
+            }
         }
-        n -= total;
-        for (int i = len-1; i >= 0; --i) {
-            if (n & (1LL << i)) 
-                putchar('6');
-            else
-                putchar('5');
+        scanf("%d", &q);
+        int vis[MAXN+5];
+        while (q--) {
+            RESET(vis, 0);
+            string a, b;
+            cin >> a >> b;
+            int start = idx[a], end = idx[b];
+            priority_queue<pair<int, int> > pq;
+            pq.push(MP(0, start));
+            while (!pq.empty()) {
+                int v = pq.top().S;
+                int d = -pq.top().F;
+                pq.pop();
+                if (vis[v]) continue;
+                if (v == end) {
+                    printf("%d\n", d);
+                    break;
+                }
+                vis[v] = 1;
+                for (int i = 0; i < SZ(edge[v]); ++i) {
+                    int next = edge[v][i];
+                    int need = cost[v][i];
+                    if (!vis[next]) pq.push(MP(-d-need, next));
+                }
+            }
         }
-        puts("");
     }
     return 0;
 }

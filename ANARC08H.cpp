@@ -61,28 +61,18 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+#define MAXN 1000000
+
+int f[MAXN+5];
+
 int main(){
-    int ntc;
-    scanf("%d", &ntc);
-    while (ntc--) {
-        ll n;
-        scanf("%lld", &n);
-        --n;
-        ll len = 1;
-        ll total = 0;
-        while (total + (1LL << len) <= n) {
-            total += (1LL << len);
-            ++len;
+    int n, d;
+    while (scanf("%d%d", &n, &d), n != 0 || d != 0) {
+        for (int i = 2; i <= n; ++i) {
+            f[i] = (f[i-1] + d) % i;
         }
-        n -= total;
-        for (int i = len-1; i >= 0; --i) {
-            if (n & (1LL << i)) 
-                putchar('6');
-            else
-                putchar('5');
-        }
-        puts("");
+        printf("%d %d %d\n", n, d, f[n]+1);
     }
+
     return 0;
 }
-

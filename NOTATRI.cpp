@@ -62,26 +62,21 @@ inline void OPEN(const string &s) {
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
 int main(){
-    int ntc;
-    scanf("%d", &ntc);
-    while (ntc--) {
-        ll n;
-        scanf("%lld", &n);
-        --n;
-        ll len = 1;
-        ll total = 0;
-        while (total + (1LL << len) <= n) {
-            total += (1LL << len);
-            ++len;
+    int n;
+    while (scanf("%d", &n), n != 0) {
+        vector<int> v;
+        for (int i = 0; i < n; ++i) {
+            int a;
+            scanf("%d", &a);
+            v.PB(a);
         }
-        n -= total;
-        for (int i = len-1; i >= 0; --i) {
-            if (n & (1LL << i)) 
-                putchar('6');
-            else
-                putchar('5');
-        }
-        puts("");
+        sort(ALL(v));
+        ll ans = 0;
+        for (int i = 0; i < n; ++i)
+            for (int j = i+1; j < n; ++j) {
+                ans += v.end()-upper_bound(ALL(v), v[i] + v[j]);
+            }
+        printf("%lld\n", ans);
     }
     return 0;
 }

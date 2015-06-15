@@ -61,27 +61,21 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+ll c[76][76];
+
 int main(){
     int ntc;
     scanf("%d", &ntc);
+    c[0][0] = 1;
+    for (int i = 1; i <= 74; ++i) {
+        for (int j = 0; j <= i; ++j) {
+            c[i][j] = (j) ? c[i-1][j-1] + c[i-1][j] : 1;
+        }
+    }
     while (ntc--) {
-        ll n;
-        scanf("%lld", &n);
-        --n;
-        ll len = 1;
-        ll total = 0;
-        while (total + (1LL << len) <= n) {
-            total += (1LL << len);
-            ++len;
-        }
-        n -= total;
-        for (int i = len-1; i >= 0; --i) {
-            if (n & (1LL << i)) 
-                putchar('6');
-            else
-                putchar('5');
-        }
-        puts("");
+        int a, b;
+        scanf("%d%d", &a, &b);
+        printf("%d %lld\n", a, c[b+9][b]);
     }
     return 0;
 }
