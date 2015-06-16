@@ -1,0 +1,10 @@
+# Ignore all except defined source files
+*
+
+# Do not ignore these files
+!.gitignore
+!*.cpp
+!*.java
+
+# Do not ignore even in subdirectories
+!*/
