@@ -60,59 +60,61 @@ inline void OPEN(const string &s) {
 }
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
+#define MOD 1000000007
+#define MAXN 10005
 
-#define INF 1000000
+string A, B;
+
+ll memo[MAXN][10][2];
+int vis[MAXN][10][2];
+
+ll dp(int pos, int last, int type) {
+	if (!pos) { return 1; }
+	if (vis[pos][last][type]) return memo[pos][last][type];
+	int ret = 0;
+	if ( (type) ^ (pos % 2 == 0) )  {
+		for (int i = last+1; i <= 9; ++i) {
+			ret += dp(pos-1, i, type);
+		}
+	}
+	else {
+		for (int i = last-1; i >= 0; ++i) {
+			ret += dp(pos-1, i, type);
+		}
+	}
+	vis[pos][last][type] = 1; memo[pos][last][type] = ret;
+	return ret;
+}
+
+ll dp(int pos, int last, int type) {
+	
+}
 
 int main(){
-    int ntc;
-    scanf("%d", &ntc);
-    for (int i = 0; i < ntc; ++i) {
-    	int a, b, c;
-    	scanf("%d%d%d", &a, &b, &c);
-    	queue<pair<pair<int, int>, int > > Q;
-		map<pair<int,int>, int> vis;
-    	Q.push(MP(MP(0, 0), 0));
-    	int ans = -1;
-    	while (!Q.empty()) {
-    		pair<int, int> p = Q.front().F;
-    		int step = Q.front().S;
-    		Q.pop();
-			if (p.F == c || p.S == c) {
-				ans = step;
-				break;
+	cin.sync_with_stdio(false);
+
+	int ntc;
+	cin >> ntc;
+	while (ntc--) {
+		cin >> A >> B;
+		if (SZ(A) > SZ(B)) swap(A,B);
+		if (SZ(A) == SZ(B) && A > B) swap(A,B);
+
+		ll ans = 0;
+		for (int len = SZ(A)+1; len < SZ(B); ++len) {
+			for (int i = 1; i <= 9; ++i) {
+				ans += dp(len-1, i, 0);
+				ans += dp(len-1, i, 1);
+				ans = ans % MOD;
 			}
-			if (EXIST(p, vis)) 
-				continue;
+		}
+		for(int i = 1; i <= 9; ++i) {
+			
+		}
 
-			vis[p] = 1;
+		cout << ans << endl;
 
-			pair<int, int> tmp = p;
-			tmp.F = a;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = b;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.F = 0;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = 0;
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.S += tmp.F; tmp.F = 0; 
-			if (tmp.S > b) {
-				tmp.F = tmp.S - b;
-				tmp.S = b;
-			}
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.F += tmp.S; tmp.S = 0; 
-			if (tmp.F > a) {
-				tmp.S = tmp.F - a;
-				tmp.F = a;
-			}
-			Q.push(MP(tmp, step+1));
-    	}
-    	printf("%d\n", ans);
-    }
-    
-    return 0;
+	}
+	return 0;
 }
 

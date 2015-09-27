@@ -61,58 +61,20 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
-#define INF 1000000
+#define MOD 1000000007
 
 int main(){
-    int ntc;
-    scanf("%d", &ntc);
-    for (int i = 0; i < ntc; ++i) {
-    	int a, b, c;
-    	scanf("%d%d%d", &a, &b, &c);
-    	queue<pair<pair<int, int>, int > > Q;
-		map<pair<int,int>, int> vis;
-    	Q.push(MP(MP(0, 0), 0));
-    	int ans = -1;
-    	while (!Q.empty()) {
-    		pair<int, int> p = Q.front().F;
-    		int step = Q.front().S;
-    		Q.pop();
-			if (p.F == c || p.S == c) {
-				ans = step;
-				break;
-			}
-			if (EXIST(p, vis)) 
-				continue;
-
-			vis[p] = 1;
-
-			pair<int, int> tmp = p;
-			tmp.F = a;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = b;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.F = 0;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = 0;
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.S += tmp.F; tmp.F = 0; 
-			if (tmp.S > b) {
-				tmp.F = tmp.S - b;
-				tmp.S = b;
-			}
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.F += tmp.S; tmp.S = 0; 
-			if (tmp.F > a) {
-				tmp.S = tmp.F - a;
-				tmp.F = a;
-			}
-			Q.push(MP(tmp, step+1));
-    	}
-    	printf("%d\n", ans);
-    }
-    
+	string s;
+	getline(cin, s);
+	int n = SZ(s);
+	unsigned ans = 1;
+	for (int i = 0; i < n; ++i) {
+		if (s[i] == 'e') {
+			if (i + 1 < n && s[i+1] == 'u') ans = (ans * 3) % MOD;
+			else ans = (ans * 2) % MOD;
+		}
+	}
+	printf("%u\n", ans);
+	
     return 0;
 }
-

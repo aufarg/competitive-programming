@@ -61,58 +61,44 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
-#define INF 1000000
+#define MAXN 500000
+
+int a[MAXN+5];
+map<pair<int, int>, ll> vis, memo;
+vector<int> edge[MAXN+5];
+
+ll dp(int v, int cutnode) {
+	if (vis[MP(v, cutnode)]) return memo[MP(v, cutnode)];
+	ll ret = a[v];
+	for (int i = 0; i < SZ(edge[v]); ++i) {
+		if (edge[v][i] != cutnode) {
+			ret += dp(edge[v][i], v);
+		}
+	}
+	vis[MP(v, cutnode)] = 1; memo[MP(v, cutnode)] = ret;
+	return ret;
+}
 
 int main(){
-    int ntc;
-    scanf("%d", &ntc);
-    for (int i = 0; i < ntc; ++i) {
-    	int a, b, c;
-    	scanf("%d%d%d", &a, &b, &c);
-    	queue<pair<pair<int, int>, int > > Q;
-		map<pair<int,int>, int> vis;
-    	Q.push(MP(MP(0, 0), 0));
-    	int ans = -1;
-    	while (!Q.empty()) {
-    		pair<int, int> p = Q.front().F;
-    		int step = Q.front().S;
-    		Q.pop();
-			if (p.F == c || p.S == c) {
-				ans = step;
-				break;
-			}
-			if (EXIST(p, vis)) 
-				continue;
+	int n;
 
-			vis[p] = 1;
-
-			pair<int, int> tmp = p;
-			tmp.F = a;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = b;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.F = 0;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = 0;
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.S += tmp.F; tmp.F = 0; 
-			if (tmp.S > b) {
-				tmp.F = tmp.S - b;
-				tmp.S = b;
-			}
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.F += tmp.S; tmp.S = 0; 
-			if (tmp.F > a) {
-				tmp.S = tmp.F - a;
-				tmp.F = a;
-			}
-			Q.push(MP(tmp, step+1));
-    	}
-    	printf("%d\n", ans);
-    }
-    
-    return 0;
+	scanf("%d", &n);
+	for (int i = 1; i <= n; ++i) {
+		scanf("%d", &a[i]); 
+	}
+	for (int i = 0; i < n-1; ++i) {
+		int u, v;
+		scanf("%d%d", &u, &v);
+		edge[u].PB(v);
+		edge[v].PB(u);
+	}
+	ll ans = 0;
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 0; j < SZ(edge[i]); ++j) {
+			MX(ans, dp(i, edge[i][j]));
+		}
+	}
+	printf("%lld\n", ans);
+	return 0;
 }
 

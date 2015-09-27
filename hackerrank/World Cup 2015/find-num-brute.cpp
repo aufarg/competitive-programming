@@ -61,58 +61,58 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
-#define INF 1000000
+#define MAXN 200000
+#define MAXV 10000000
 
-int main(){
-    int ntc;
-    scanf("%d", &ntc);
-    for (int i = 0; i < ntc; ++i) {
-    	int a, b, c;
-    	scanf("%d%d%d", &a, &b, &c);
-    	queue<pair<pair<int, int>, int > > Q;
-		map<pair<int,int>, int> vis;
-    	Q.push(MP(MP(0, 0), 0));
-    	int ans = -1;
-    	while (!Q.empty()) {
-    		pair<int, int> p = Q.front().F;
-    		int step = Q.front().S;
-    		Q.pop();
-			if (p.F == c || p.S == c) {
-				ans = step;
-				break;
+int vis[MAXN], memo[MAXN];
+int meml[MAXN], memr[MAXN];
+
+int solve(int n, int a, int b, int c) {
+	int ret = MAXV;
+	int l, r;
+	if (n == 1) return 0;
+	if (vis[n]) return memo[n];
+	for (int i = 0; i <= n; ++i) {
+		for (int j = i; j <= n; ++j) {
+			int tmp = 0;
+			if ((i > 0) && (i < n))
+				MX(tmp, a + solve(i, a, b, c));
+			if ((j-i > 0) && (j-i < n))
+				MX(tmp, b + solve(j-i, a, b, c));
+			if ((n-j > 0) && (n-j < n))
+				MX(tmp, c + solve(n-j, a, b, c));
+			if (tmp > 0) {
+				if (ret >= tmp) {
+					MN(ret, tmp);
+					l = i;
+					r = j;
+				}
 			}
-			if (EXIST(p, vis)) 
-				continue;
-
-			vis[p] = 1;
-
-			pair<int, int> tmp = p;
-			tmp.F = a;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = b;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.F = 0;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = 0;
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.S += tmp.F; tmp.F = 0; 
-			if (tmp.S > b) {
-				tmp.F = tmp.S - b;
-				tmp.S = b;
-			}
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.F += tmp.S; tmp.S = 0; 
-			if (tmp.F > a) {
-				tmp.S = tmp.F - a;
-				tmp.F = a;
-			}
-			Q.push(MP(tmp, step+1));
-    	}
-    	printf("%d\n", ans);
-    }
-    
-    return 0;
+		}
+	}
+	vis[n] = 1; memo[n] = ret;
+	meml[n] = l;
+	memr[n] = r;
+	return ret;
 }
 
+int main() {
+	int ntc;
+	scanf("%d", &ntc);
+	for (int i = 0; i < ntc; ++i) {
+		int n, a, b, c;
+		vector<int> v;
+		scanf("%d%d%d%d", &n, &a, &b, &c);
+		v.PB(a); v.PB(b); v.PB(c);
+		sort(ALL(v));
+		a = v[0]; b = v[1]; c = v[2];
+		RESET(vis, 0);
+		printf("%d\n", solve(n, a, b, c));
+		for (int i = 1; i <= n; ++i) 
+			printf("%d: (%d, %d) taking %d %d %d for $%d from %d %d %d\n", 
+					i, 
+					meml[i], memr[i], meml[i], memr[i]-meml[i], i-memr[i],
+					memo[i],
+					a + memo[meml[i]], b + memo[memr[i]-meml[i]], c + memo[i-memr[i]]);
+	}
+}

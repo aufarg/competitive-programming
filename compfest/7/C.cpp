@@ -55,64 +55,61 @@ typedef vector<int> vint;
 #define MN(a,b) a = min((a),(b));
 
 inline void OPEN(const string &s) {
-    freopen((s + ".in").c_str(), "r", stdin);
-    freopen((s + ".out").c_str(), "w", stdout);
+	freopen((s + ".in").c_str(), "r", stdin);
+	freopen((s + ".out").c_str(), "w", stdout);
 }
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
-#define INF 1000000
-
 int main(){
-    int ntc;
-    scanf("%d", &ntc);
-    for (int i = 0; i < ntc; ++i) {
-    	int a, b, c;
-    	scanf("%d%d%d", &a, &b, &c);
-    	queue<pair<pair<int, int>, int > > Q;
-		map<pair<int,int>, int> vis;
-    	Q.push(MP(MP(0, 0), 0));
-    	int ans = -1;
-    	while (!Q.empty()) {
-    		pair<int, int> p = Q.front().F;
-    		int step = Q.front().S;
-    		Q.pop();
-			if (p.F == c || p.S == c) {
-				ans = step;
-				break;
+	int ntc;
+	scanf("%d", &ntc);
+	for (int itc = 0; itc < ntc; ++itc) {
+		string s;
+		cin >> s;
+		int n = SZ(s);
+		int sum = 0;
+		int last = 1;
+		for (int i = 0; i < n; ++i) {
+			if ( (i % 2 == 0 && s[i] == '(') || (i % 2 == 1 && s[i] == ')') ) ;
+			else last = 0;
+		}
+		if (last) {
+			puts("TIDAK ADA");
+			continue;
+		}
+		int idx = 0;
+		for (int i = 0; i < n; ++i) {
+			if (s[i] == '(') {
+				if (sum) idx = i;
+				++sum;
 			}
-			if (EXIST(p, vis)) 
-				continue;
-
-			vis[p] = 1;
-
-			pair<int, int> tmp = p;
-			tmp.F = a;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = b;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.F = 0;
-			Q.push(MP(tmp, step+1));
-			tmp = p; tmp.S = 0;
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.S += tmp.F; tmp.F = 0; 
-			if (tmp.S > b) {
-				tmp.F = tmp.S - b;
-				tmp.S = b;
+			else --sum;
+		}
+		sum = 0;
+		for (int j = 0; j < n; ++j) {
+			if (j < idx) {
+				putchar(s[j]);
+				if (s[j] == '(') ++sum;
+				else --sum;
 			}
-			Q.push(MP(tmp, step+1));
-
-			tmp = p; tmp.F += tmp.S; tmp.S = 0; 
-			if (tmp.F > a) {
-				tmp.S = tmp.F - a;
-				tmp.F = a;
+			else if (j > idx) {
+				int remaining = n-j;
+				if (remaining == sum) {
+					putchar(')');	
+					--sum;
+				}
+				else {
+					putchar('(');
+					++sum;
+				}
 			}
-			Q.push(MP(tmp, step+1));
-    	}
-    	printf("%d\n", ans);
-    }
-    
-    return 0;
+			else {
+				putchar(')'); 
+				--sum;
+			}
+		}
+		puts("");
+	}	
+	return 0;
 }
-

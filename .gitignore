@@ -8,3 +8,6 @@
 
 # Do not ignore even in subdirectories
 !*/
+
+# Reignore this files
+**/Practices
