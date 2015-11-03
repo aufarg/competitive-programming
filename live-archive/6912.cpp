@@ -101,16 +101,17 @@ int main(){
     			}
 
 			for (int c = br_size; c < k; ++c) {
-				tmp += n / pr[c];
+				int ttmp = n / pr[c];
 				for (int d = 0; d < SZ(pre); ++d) {
 					int num = pr[c] * pre[d].F;
 					if (pre[d].S % 2) {
-						tmp -= n / num;
+						ttmp -= n / num;
 					}
 					else {
-						tmp += n / num;
+						ttmp += n / num;
 					}
 				}
+				if (ttmp > 0) tmp += ttmp;
 			}
 
 			MX(ans, tmp);
