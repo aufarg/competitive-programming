@@ -1,4 +1,4 @@
-/* kucingimbalance */
+/* DELAPAN.3gp */
 #include <vector>
 #include <map>
 #include <set>
@@ -19,13 +19,23 @@
 #include <cassert>
 using namespace std;
 
+#ifdef DEBUG
+#define debug(...) printf(__VA_ARGS__)
 #define GetTime() fprintf(stderr,"Running time: %.3lf second\n",((double)clock())/CLOCKS_PER_SEC)
+#else
+#define debug(...) 
+#define GetTime() 
+#endif
 
 //type definitions
 typedef long long ll;
-typedef unsigned long long ull;
+typedef double db;
+typedef pair<int,int> pii;
+typedef vector<int> vint;
 
 //abbreviations
+#define A first
+#define B second
 #define F first
 #define S second
 #define MP make_pair
@@ -49,64 +59,59 @@ inline void OPEN(const string &s) {
     freopen((s + ".out").c_str(), "w", stdout);
 }
 
-/* -------------- end of kucingimbalance's template -------------- */
+/* -------------- end of DELAPAN.3gp's template -------------- */
 
-int num[] = {2, 3, 5, 7, 11, 13, 17, 19, 23};
+#define MAXN 100000
+#define MAXA 1000000
 
-ull mod_mul(ull base, ull times, ull mod) {
-		if (times == 0) return 0;
-		ull ret = mod_mul(base, times/2, mod);
-		ret = (ret + ret) % mod;
-		if (times%2) return (ret + base) % mod;
-		else return ret;
-	}
-	ull mod_exp(ull base, ull power, ull mod) {
-		if (power == 0) return 1;
-		ull ret = mod_exp(base, power/2, mod);
-		ret = mod_mul(ret, ret, mod);
-		if (power%2) return mod_mul(ret, base, mod);
-		else return ret;
-	}
+int n;
+int a[MAXN+5];
+pair<int,int> p[MAXN+5];
+int sum[MAXA+5];
+int done[MAXN+5];
 
-int check(ull n) {
-	if (n == 2 || n == 3) return 1;
-
-	ull d = (n-1);
-	ull two = 0;
-	while (d % 2 == 0) {
-		d /= 2;
-		++two;
-	}
-
-	for (int i = 0; i < 9; ++i) {
-		ull a = num[i];
-		if (a > n-2) break;
-		ull x = mod_exp(a, d, n);
-		if (x == 1 || x == n-1) continue;
-		int cont = 0;
-		int s = two-1;
-		for (; s > 0 && x != n-1 && x != 1; --s) {
-			x = mod_mul(x, x, n);
-			if (x == 1) return 0;
-			if (x == n-1) {
-				cont = true;
-			}
-		}
-		if (cont) continue;
-		return 0;
-	}
-	return  1;
-}
-
-int main() {
+int main(){
 	int ntc;
 	scanf("%d", &ntc);
 	for (int itc = 1; itc <= ntc; ++itc) {
-		ull n;
-		scanf("%llu", &n);
-		if (check(n))
-			puts("YES");
-		else 
-			puts("NO");
+		RESET(sum, 0);
+		RESET(done, 0);
+
+
+		scanf("%d", &n);
+		for (int i = 0; i < n; ++i) {
+			int x,y;
+			scanf("%d", &a[i]);
+			scanf("%d%d", &x, &y);
+			p[i] = MP(y,x);
+
+			sum[a[i]] = 1;
+		}
+		int ans = 0;
+		for (int i = 0; i+1 <= MAXA; ++i) {
+			sum[i+1] += sum[i];
+		}
+		ans = sum[MAXA];
+
+		vector<pii> interval;
+		for (int i = 0; i < n; ++i) {
+			int thres = 0;
+			if (p[i].S <= a[i] && a[i] <= p[i].F) ++thres;
+			if (sum[p[i].F] - sum[p[i].S-1] > thres) 
+				done[i] = true;
+			else 
+				interval.PB(p[i]);
+		}
+
+		sort(ALL(interval));
+		int last = -1;
+		for (int i = 0; i < SZ(interval); ++i) {
+			if (interval[i].S <= last) continue;
+			last = interval[i].F;
+			++ans;
+		}
+		printf("Case #%d: %d\n", itc, ans);
 	}
+	return 0;
 }
+
