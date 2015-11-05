@@ -84,7 +84,8 @@ int main(){
     	for (int b = 0; b < (1 << br_size); ++b) { // 1000
     		int tmp = 0;
     		RESET(on, 0);
-    		vector<pii> pre;
+    		vector<int> pre;
+			pre.PB(1);
 
     		for (int c = 0; c < br_size; ++c) // 10
     			if (b & (1<<c)) {
@@ -95,21 +96,15 @@ int main(){
 					}
 					int sz_pre = SZ(pre);
 					for (int i = 0; i < sz_pre; ++i)
-						if (pre[i].F * pr[c] < 34)
-							pre.PB(MP(pre[i].F * pr[c], pre[i].S+1));
-					pre.PB(MP(pr[c],1));
+						if (pre[i] * pr[c] < 34)
+							pre.PB(pre[i] * pr[c]);
     			}
 
 			for (int c = br_size; c < k; ++c) {
-				int ttmp = n / pr[c];
-				for (int d = 0; d < SZ(pre); ++d) {
-					int num = pr[c] * pre[d].F;
-					if (pre[d].S % 2) {
-						ttmp -= n / num;
-					}
-					else {
-						ttmp += n / num;
-					}
+				int ttmp = 0;
+				for (int i = pr[c]; i <= n; i += pr[c]) {
+					if (on[i]) --ttmp;
+					else ++ttmp;
 				}
 				if (ttmp > 0) tmp += ttmp;
 			}
