@@ -122,7 +122,7 @@ int main(){
 		}
 		for (int i = 0; i < SZ(n1); ++i) {
 			for (int j = i+1; j < SZ(n1); ++j) {
-				if (!adj[v1][n1[i]]) {
+				if (!adj[n1[i]][n1[j]]) {
 					puts("No");
 					return 0;
 				}
@@ -134,9 +134,10 @@ int main(){
 		for (int i = 0; i < n; ++i) {
 			if (adj[v2][i] && ans[i] == 'z') n2.PB(i);
 		}
+
 		for (int i = 0; i < SZ(n2); ++i) {
 			for (int j = i+1; j < SZ(n2); ++j) {
-				if (!adj[v2][n2[i]]) {
+				if (!adj[n2[i]][n2[j]]) {
 					puts("No");
 					return 0;
 				}
@@ -148,6 +149,13 @@ int main(){
 		}
 		for (int i = 0; i < SZ(n2); ++i) {
 			ans[n2[i]] = 'c';
+		}
+	}
+
+	for (int i = 0; i < n; ++i) {
+		if (ans[i] == 'z') {
+			puts("No");
+			return 0;
 		}
 	}
 
