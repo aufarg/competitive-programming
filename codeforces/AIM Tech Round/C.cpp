@@ -120,6 +120,24 @@ int main(){
 		for (int i = 0; i < n; ++i) {
 			if (adj[v1][i] && ans[i] == 'z') n1.PB(i);
 		}
+
+		vector<int> n2;
+		n2.PB(v2);
+		for (int i = 0; i < n; ++i) {
+			if (adj[v2][i] && ans[i] == 'z') n2.PB(i);
+		}
+
+		for (int i = 0; i < SZ(n1); ++i)
+			for (int j = 0; j < SZ(n2); ++j) {
+				if (n1[i] == n2[j]) {
+					puts("No");
+					return 0;
+				}
+				if (adj[n1[i]][n2[j]]) {
+					puts("No");
+					return 0;
+				}
+			}
 		for (int i = 0; i < SZ(n1); ++i) {
 			for (int j = i+1; j < SZ(n1); ++j) {
 				if (!adj[n1[i]][n1[j]]) {
@@ -127,12 +145,6 @@ int main(){
 					return 0;
 				}
 			}
-		}
-
-		vector<int> n2;
-		n2.PB(v2);
-		for (int i = 0; i < n; ++i) {
-			if (adj[v2][i] && ans[i] == 'z') n2.PB(i);
 		}
 
 		for (int i = 0; i < SZ(n2); ++i) {
