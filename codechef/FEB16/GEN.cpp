@@ -61,22 +61,27 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+#define MAXN 200
+#define MAXV 1000000000
+
+int a[MAXN+5], b[MAXN+5];
+
 int main(){
-	int ntc;
-	scanf("%d", &ntc);
-	while (ntc--) {
-		ll n;
-		scanf("%lld", &n);
-		if (n == 0) {
-			puts("0");
-		}
-		else {
-			ll h = (n-1)/2;
-			ll ans = h*(h+1) + ((n%2) ? 0 : 1);
-			printf("%lld\n", ans);
-		}
-		printf("%lld\n", (n+1)*(n)/6);
+	srand(time(NULL));
+	int n = rand() % MAXN + 1;
+	for (int i = 0; i < n; ++i) {
+		a[i] = rand() % MAXV + 1;
+		b[i] = rand() % MAXV + 1;
 	}
+	printf("%d\n", n);
+	for (int i = 0; i < n; ++i) {
+		printf("%d ", a[i]);
+	}
+	puts("");
+	for (int i = 0; i < n; ++i) {
+		printf("%d ", b[i]);
+	}
+	puts("");
     return 0;
 }
 

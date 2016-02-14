@@ -61,22 +61,58 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+#define MAXN 2000
+#define MAXV 5000
+
+int a[MAXN+5];
+int vis[MAXV+5];
+int bit[MAXV+5];
+
+
+void update(int k, int v) {
+	for (; k <= MAXV; k+=k&(-k))
+		bit[k] += v;
+}
+
+int query(int k) {
+	int ret = 0;
+	for (; k; k -= k&(-k))
+		ret += bit[k];
+	return ret;
+}
+
 int main(){
-	int ntc;
-	scanf("%d", &ntc);
-	while (ntc--) {
-		ll n;
-		scanf("%lld", &n);
-		if (n == 0) {
-			puts("0");
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; ++i) {
+    	scanf("%d", &a[i]);
+    }
+    sort(a, a+n);
+
+    map<int, int> pos_sum;
+    for (int i = 0; i < n; ++i)
+    	for (int j = i+1; j < n; ++j) {
+			pos_sum[a[j]-a[i]]++;
+    	}
+
+    FORIT(it, pos_sum) {
+    	update(it->F, it->S);
+    }
+
+	double ans = 0.0;
+	FORIT(it1, pos_sum) {
+		for (__typeof(pos_sum.begin()) it2 = pos_sum.begin(); it2 != pos_sum.end() && it2->F < it1->F; ++it2) {
+			int d = it1->F - it2->F;
+			double c1 = (double)it1->S / (double)(n * (n-1) / 2);
+			double c2 = (double)it2->S / (double)(n * (n-1) / 2);
+			double c3 = (double)query(d-1)/ (double)(n * (n-1) / 2);
+			/* printf("%d %d %d\n", it1->F, it2->F, d); */
+			/* printf("%d %d\n", it1->S, it2->S); */
+			/* printf("%lf %lf %lf\n", c1, c2, c3); */
+			ans += c1 * c2 * c3;
 		}
-		else {
-			ll h = (n-1)/2;
-			ll ans = h*(h+1) + ((n%2) ? 0 : 1);
-			printf("%lld\n", ans);
-		}
-		printf("%lld\n", (n+1)*(n)/6);
 	}
-    return 0;
+	printf("%.9lf\n", ans);
+	return 0;
 }
 

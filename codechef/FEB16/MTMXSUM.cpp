@@ -36,7 +36,7 @@ typedef vector<int> vint;
 //abbreviations
 #define A first
 #define B second
-#define F first
+#define first
 #define S second
 #define MP make_pair
 #define PB push_back
@@ -62,8 +62,12 @@ inline void OPEN(const string &s) {
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
 #define MAXN 100000
+#define MOD 1000000007LL
 
-pii a[MAXN+5], b[MAXN+5];
+ll a[MAXN+5], b[MAXN+5];
+int lastA[MAXN+5], lastB[MAXN+5], nxtA[MAXN+5], nxtB[MAXN+5];
+ll dA[MAXN+5], ddA[MAXN+5];
+ll dB[MAXN+5], ddB[MAXN+5];
 
 int main(){
 	int n;
@@ -71,21 +75,92 @@ int main(){
 	for (int i = 0; i < n; ++i) {
 		int x;
 		scanf("%d", &x);
-		a[i] = MP(x+i+1, i+1);
+		a[i] = x+i+1;
 	}
 	for (int i = 0; i < n; ++i) {
 		int x;
 		scanf("%d", &x);
-		b[i] = MP(x+i+1, i+1);
+		b[i] = x+i+1;
 	}
 
-	sort(a, a+n);
-	sort(b, a+n);
-
-	int i = 0, j = 0;
-	while (i < n && j < n) {
+	for (int i = 0; i < n; ++i) {
+		if (i) {
+			int idxA = i-1;
+			int idxB = i-1;
+			while (idxA >= 0 && a[idxA] <= a[i]) {
+				idxA = lastA[idxA];
+			}
+			while (idxB >= 0 && b[idxB] <= b[i]) {
+				idxB = lastB[idxB];
+			}
+			lastA[i] = idxA;
+			lastB[i] = idxB;
+		}
+		else {
+			lastA[i] = -1;
+			lastB[i] = -1;
+		}
 	}
 
+	for (int i = n-1; i >= 0; --i) {
+		if (i != n-1) {
+			int idxA = i+1;
+			int idxB = i+1;
+			while (idxA < n && a[idxA] < a[i]) {
+				idxA = nxtA[idxA];
+			}
+			while (idxB < n && b[idxB] < b[i]) {
+				idxB = nxtB[idxB];
+			}
+			nxtA[i] = idxA;
+			nxtB[i] = idxB;
+		}
+		else {
+			nxtA[i] = n;
+			nxtB[i] = n;
+		}
+	}
+
+	for (int i = 0; i < n; ++i) {
+		int leftA = i-lastA[i]-1, rightA = nxtA[i]-i-1;
+		int leftB = i-lastB[i]-1, rightB = nxtB[i]-i-1;
+		int lowA = min(leftA, rightA), highA = max(leftA, rightA);
+		int lowB = min(leftB, rightB), highB = max(leftB, rightB);
+		// Uphill
+		ddA[1] = (ddA[1] + a[i]) % MOD;
+		ddB[1] = (ddB[1] + b[i]) % MOD;
+		ddA[lowA+2] = (ddA[lowA+2] - a[i] + MOD) % MOD;
+		ddB[lowB+2] = (ddB[lowB+2] - b[i] + MOD) % MOD;
+
+		// Downhill
+		ddA[highA+2] = (ddA[highA+2] - a[i] + MOD) % MOD;
+		ddB[highB+2] = (ddB[highB+2] - b[i] + MOD) % MOD;
+		ddA[lowA+highA+3] = (ddA[lowA+highA+3] + a[i]) % MOD;
+		ddB[lowB+highB+3] = (ddB[lowB+highB+3] + b[i]) % MOD;
+
+		/* puts("A"); */
+		/* printf("%d %d\n", leftA, rightA); */
+		/* puts("B"); */
+		/* printf("%d %d\n", leftB, rightB); */
+	}
+
+	ll diffA = 0, diffB = 0;
+	ll sumA = 0, sumB = 0;
+	for (int i = 1; i <= n; ++i) {
+		diffA = (diffA + ddA[i]) % MOD;
+		diffB = (diffB + ddB[i]) % MOD;
+
+		sumA = (sumA + diffA) % MOD;
+		sumB = (sumB + diffB) % MOD;
+
+		if (i > 1) printf(" ");
+		printf("%lld", (sumA * sumB) % MOD);
+		/* puts(""); */
+		/* printf("%lld %lld\n", sumA, sumB); */
+		/* printf("%lld %lld\n", diffA, diffB); */
+		/* printf("%lld %lld\n", ddA[i], ddB[i]); */
+	}
+	puts("");
 
     return 0;
 }

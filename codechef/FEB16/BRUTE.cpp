@@ -61,22 +61,50 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+#define MAXN 1000
+
+int n;
+ll a[MAXN+5], b[MAXN+5];
+ll m[MAXN+5][MAXN+5];
+
+#define MOD 1000000007
+
 int main(){
-	int ntc;
-	scanf("%d", &ntc);
-	while (ntc--) {
-		ll n;
-		scanf("%lld", &n);
-		if (n == 0) {
-			puts("0");
-		}
-		else {
-			ll h = (n-1)/2;
-			ll ans = h*(h+1) + ((n%2) ? 0 : 1);
-			printf("%lld\n", ans);
-		}
-		printf("%lld\n", (n+1)*(n)/6);
+	scanf("%d", &n);
+	for (int i = 0; i < n; ++i) {
+		int x;
+		scanf("%d", &x);
+		a[i] = x+i+1;
 	}
+	for (int i = 0; i < n; ++i) {
+		int x;
+		scanf("%d", &x);
+		b[i] = x+i+1;
+	}
+	ll mx = 0;
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < n; ++j)  {
+			m[i][j] = (a[i] * b[j]);
+			MX(mx, m[i][j]);
+		}
+
+	for (int k = 0; k < n; ++k) {
+		ll sum = 0;
+		for (int i = 0; i+k < n; ++i) {
+			for (int j = 0; j+k < n; ++j) {
+				ll mx = 0;
+				for (int ii = i; ii <= i+k; ++ii) {
+					for (int jj = j; jj <= j+k; ++jj) {
+						MX(mx, m[ii][jj]);
+					}
+				}
+				sum = (sum + mx) % MOD;
+			}
+		}
+		if (k) printf(" ");
+		printf("%lld", sum % MOD);
+	}
+	puts("");
     return 0;
 }
 

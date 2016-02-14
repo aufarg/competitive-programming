@@ -62,21 +62,24 @@ inline void OPEN(const string &s) {
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
 int main(){
-	int ntc;
-	scanf("%d", &ntc);
-	while (ntc--) {
-		ll n;
-		scanf("%lld", &n);
-		if (n == 0) {
-			puts("0");
+	int n;
+	scanf("%d", &n);
+	string s;
+	cin >> s;
+	int ans = 0;
+	for (int i = 0; i < n; ++i) {
+		for (int j = i+1; j < n; ++j) {
+			int dx = 0, dy = 0;
+			for (int k = i; k <= j; k++) {
+				if (s[k] == 'R') ++dx;
+				if (s[k] == 'L') --dx;
+				if (s[k] == 'U') ++dy;
+				if (s[k] == 'D') --dy;
+			}
+			if (dx == 0 && dy == 0) ++ans;
 		}
-		else {
-			ll h = (n-1)/2;
-			ll ans = h*(h+1) + ((n%2) ? 0 : 1);
-			printf("%lld\n", ans);
-		}
-		printf("%lld\n", (n+1)*(n)/6);
 	}
+	printf("%d\n", ans);
     return 0;
 }
 

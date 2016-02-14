@@ -61,22 +61,45 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+#define MAXN 200
+
+int mem[MAXN+5][MAXN+5][MAXN+5];
+int vis[MAXN+5][MAXN+5][MAXN+5];
+int red, green, blue;
+
+int dp(int r, int g, int b) {
+	if (r < 0 || g < 0 || b < 0) return 0;
+	if (r == 1 && g == 0 && b == 0) return 1;
+	if (r == 0 && g == 1 && b == 0) return 2;
+	if (r == 0 && g == 0 && b == 1) return 4;
+	int &ret = mem[r][g][b];
+	if (vis[r][g][b]) return ret;
+	vis[r][g][b] = 1;
+	if (g && b) ret |= dp(r+1, g-1, b-1);
+	if (r && b) ret |= dp(r-1, g+1, b-1);
+	if (r && g) ret |= dp(r-1, g-1, b+1);
+	if (r > 1) ret |= dp(r-1, g, b);
+	if (g > 1) ret |= dp(r, g-1, b);
+	if (b > 1) ret |= dp(r, g, b-1);
+	return ret;
+}
+
 int main(){
-	int ntc;
-	scanf("%d", &ntc);
-	while (ntc--) {
-		ll n;
-		scanf("%lld", &n);
-		if (n == 0) {
-			puts("0");
-		}
-		else {
-			ll h = (n-1)/2;
-			ll ans = h*(h+1) + ((n%2) ? 0 : 1);
-			printf("%lld\n", ans);
-		}
-		printf("%lld\n", (n+1)*(n)/6);
-	}
+    int n;
+    scanf("%d", &n);
+    string s, ans;
+    cin >> s;
+    for (int i = 0; i < n; ++i) {
+    	if (s[i] == 'R') ++red;
+    	if (s[i] == 'G') ++green;
+    	if (s[i] == 'B') ++blue;
+    }
+	int mask = dp(red, green, blue);
+	if (mask & 4) ans += 'B';
+	if (mask & 2) ans += 'G';
+	if (mask & 1) ans += 'R';
+
+	cout << ans << endl;
     return 0;
 }
 
