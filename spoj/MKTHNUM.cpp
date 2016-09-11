@@ -1,125 +1,100 @@
-/* DELAPAN.3gp */
-#include <vector>
-#include <map>
-#include <set>
-#include <queue>
-#include <deque>
-#include <stack>
-#include <algorithm>
-#include <utility>
-#include <numeric>
-#include <sstream>
-#include <iostream>
-#include <iomanip>
-#include <cstdio>
-#include <cstring>
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
-#include <cassert>
+#include <bits/stdc++.h>
+
 using namespace std;
 
-#ifdef DEBUG
-#define debug(...) printf(__VA_ARGS__)
-#define GetTime() fprintf(stderr,"Running time: %.3lf second\n",((double)clock())/CLOCKS_PER_SEC)
-#else
-#define debug(...) 
-#define GetTime() 
-#endif
-
-//type definitions
-typedef long long ll;
-typedef double db;
-typedef pair<int,int> pii;
-typedef vector<int> vint;
-
-//abbreviations
-#define A first
-#define B second
-#define F first
-#define S second
-#define MP make_pair
-#define PB push_back
-
-//macros
-#define REP(i,n) for (int i = 0; i < (n); ++i)
-#define REPD(i,n) for (int i = (n)-1; 0 <= i; --i)
-#define FOR(i,a,b) for (int i = (a); i <= (b); ++i)
-#define FORD(i,a,b) for (int i = (a); (b) <= i; --i)
-#define FORIT(it,c) for (__typeof ((c).begin()) it = (c).begin(); it != (c).end(); it++)
-#define ALL(a) (a).begin(),(a).end()
-#define SZ(a) ((int)(a).size())
-#define RESET(a,x) memset(a,x,sizeof(a))
-#define EXIST(a,s) ((s).find(a) != (s).end())
-#define MX(a,b) a = max((a),(b));
-#define MN(a,b) a = min((a),(b));
-
-inline void OPEN(const string &s) {
-    freopen((s + ".in").c_str(), "r", stdin);
-    freopen((s + ".out").c_str(), "w", stdout);
-}
-
-/* -------------- end of DELAPAN.3gp's template -------------- */
-
 #define MAXN 100000
-int n, m;
-int cnt;
-int a[MAXN+5];
-int mapped[MAXN+5];
-map<int, int> a_map, rev_map;
 
-struct node {
-	int l,r; 
-	vector<int> elmnts;
-	node *lchild, *rchild;
+struct SegTree;
+
+SegTree *rev[4*MAXN+5];
+int a[4*MAXN+5];
+
+struct SegTree
+{
+    SegTree *lft, *rgt;
+    int ll, rr;
+    int val;
+    SegTree(int l, int r, int id)
+    {
+        ll = l, rr = r; val = a[ll];
+        if (l == r) lft = rgt = NULL;
+        else {
+            int mid = (l+r)/2;
+            lft = new SegTree(l, mid, 2*id);
+            rgt = new SegTree(mid+1, r, 2*id+1);
+            val = lft->val + rgt->val;
+        }
+        rev[id] = this;
+    }
+
+    SegTree(int l, int r, int x, int id)
+    {
+        ll = l; rr = r; val = a[ll];
+        if (l == r) lft = rgt = NULL;
+        else {
+            int mid = (l+r)/2;
+            if (x <= mid) {
+                lft = new SegTree(l, mid, x, 2*id);
+                rgt = rev[2*id+1];
+            }
+            else {
+                lft = rev[2*id];
+                rgt = new SegTree(mid+1, r, x, 2*id+1);
+            }
+            val = lft->val + rgt->val;
+        }
+        rev[id] = this;
+    }
+
+    int Query(int l, int r)
+    {
+        if (r < ll || l > rr) return 0;
+        else if (l <= ll && rr <= r) return val;
+        else return lft->Query(l, r) + rgt->Query(l, r);
+    }
+
+    ~SegTree()
+    {
+        if (lft != NULL) delete lft;
+        if (rgt != NULL) delete rgt;
+    }
 };
 
-void build_tree(node *cur_node) {
-	int l = cur_node->l, r = cur_node->r;
-	if (cur_node->l == cur_node->r) {
-		cur_node->elmnts.PB(mapped[l]);
-		return;
-	}
-	
-	// lch sama rch placeholder aja
-	node *lch = cur_node->lchild = (node *)malloc(sizeof(node));
-	node *rch = cur_node->rchild = (node *)malloc(sizeof(node));
+SegTree *root[MAXN+5];
 
-	lch->l = l; lch->r = (l+r)/2;
-	rch->l = (l+r)/2+1; rch->r = r;
+int main()
+{
+    int n, m;
+    scanf("%d%d", &n, &m);
+    vector<pair<int,int>> srt;
+    for (int i = 0; i < n; ++i) {
+        scanf("%d", &a[i]);
+        srt.push_back(make_pair(a[i], i));
+        a[i] = 0;
+    }
 
-	build_tree(lch); build_tree(rch);
-	vector<int> *ret = &cur_node->elmnts;
-	int idl = 0, idr = 0;
-	while (idl < SZ(lch->elmnts) && idr < SZ(rch->elmnts)) {
-		if (lch->elmnts[idl] < rch->elmnts[idr]) {
-			ret->PB(lch->elmnts[idl]);
-		}
-		else {
-			ret->PB(rch->elmnts[idr]);
-		}
-	}
-	return;
+    sort(srt.begin(), srt.end());
+    root[0] = new SegTree(0, n-1, 1);
+    for (int i = 0; i < n; ++i) {
+        int idx = srt[i].second;
+        a[idx] = 1;
+        root[i+1] = new SegTree(0, n-1, idx, 1);
+    }
+
+    for (int i = 0; i < m; ++i) {
+        int a, b, k;
+        scanf("%d%d%d", &a, &b, &k);
+        --a; -- b;
+        int l = 0, r = n;
+        while (l < r) {
+            int mid = (l+r)/2;
+            int sum = root[mid]->Query(a, b);
+            if (sum < k) l = mid+1;
+            else r = mid;
+        }
+        for (; root[l]->Query(a,b) >= k; --l);
+        for (; root[l]->Query(a,b) < k; ++l);
+        printf("%d\n", srt[l-1].first);
+    }
+    return 0;
 }
-
-
-int main(){
-	scanf("%d%d", &n, &m);
-	for (int i = 1; i <= n; ++i) {
-		scanf("%d", &a[i]);
-		mapped[i] = a[i];
-		a_map[a[i]] = 1;
-	}
-
-	FORIT(it, a_map) {
-		it->second = ++cnt;
-		rev_map[it->second] = it->first;
-	}
-
-	node root;
-	root.l = 1; root.r = n;
-	build_tree(&root);
-
-	return 0;
-}
-
