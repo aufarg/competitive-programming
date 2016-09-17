@@ -61,22 +61,60 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
-int main(){
-	int ntc;
-	scanf("%d", &ntc);
-	while (ntc--) {
-		ll n;
-		scanf("%lld", &n);
-		if (n == 0) {
-			puts("0");
-		}
-		else {
-			ll h = (n-1)/2;
-			ll ans = h*(h+1) + ((n%2) ? 0 : 1);
-			printf("%lld\n", ans);
-		}
-		printf("%lld\n", (n+1)*(n)/6);
+#define MAXD 2000
+#define MOD 1000000007
+
+ll mem[MAXD+5][MAXD+5];
+int vis[MAXD+5][MAXD+5];
+ll nck[MAXD+5][MAXD+5];
+
+ll dp(int num, int cur) {
+	if (num == 0) {
+		if (cur == 0) return 1;
+		else return 0;
 	}
-    return 0;
+	ll &ret = mem[num][cur];
+	if (vis[num][cur]) return ret;
+	vis[num][cur] = 1;
+	ret = dp(num-1, cur+1);
+	if (cur > 0) ret = (ret + dp(num-1, cur-1)) % MOD;
+	return ret;
+}
+
+int main(){
+	nck[0][0] = 1;
+	for (int i = 1; i <= MAXD; ++i) {
+		for (int j = 0; j <= i; ++j) {
+			if (j == i || j == 0) nck[i][j] = 1;
+			else nck[i][j] = (nck[i-1][j-1] + nck[i-1][j]) % MOD;
+		}
+	}
+    int n, m;
+    string bought;
+    scanf("%d%d", &n, &m);
+    cin >> bought;
+    int v = 0;
+    for (int i = 0; i < m; ++i)
+    	if (bought[i] == '(') ++v;
+		else --v;
+
+    int d = n-m;
+
+    ll ans = 0;
+	for (int t = max(0, -v); t <= d; ++t) {
+		for (int i = 0; i <= d; ++i) {
+			if (i < t) continue;
+			if ( (i-t) % 2 == 1) continue;
+			int pbb = (i-t) / 2;
+			ll cat = nck[2*pbb][pbb] / (pbb+1);
+			ll cnt = (nck[pbb][t] * cat) % MOD;
+			assert(t+v >= 0);
+			printf("%d %d %d %d %d %d %d\n", t, i, d-i, t+v, cnt, cat, dp(d-i, t+v));
+			ans = (ans + (cnt * dp(d-i, t+v)) % MOD) % MOD;
+		}
+	}
+	cout << ans << endl;
+
+	return 0;
 }
 

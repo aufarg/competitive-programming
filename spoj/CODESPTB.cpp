@@ -61,22 +61,51 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+#define MAXN 100000
+#define MAXV 1000000
+
+struct bit {
+	int f[MAXV+5];
+};
+
+void bit_init(bit *b) {
+	for (int i = 0; i <= MAXV; ++i)
+		b->f[i] = 0;
+}
+
+void bit_update(bit *b, int k, int v) {
+	for (; k <= MAXV; k += k&(-k)) {
+		b->f[k] += v;
+	}
+}
+
+ll bit_query(bit *b, int k) {
+	ll ret = 0;
+	for (; k; k -= k&(-k)) ret += b->f[k];
+	return ret;
+}
+
+int a[MAXN+5];
+
 int main(){
 	int ntc;
 	scanf("%d", &ntc);
 	while (ntc--) {
-		ll n;
-		scanf("%lld", &n);
-		if (n == 0) {
-			puts("0");
+		int n;
+		scanf("%d", &n);
+		for (int i = 0; i < n; ++i) {
+			scanf("%d", &a[i]);
 		}
-		else {
-			ll h = (n-1)/2;
-			ll ans = h*(h+1) + ((n%2) ? 0 : 1);
-			printf("%lld\n", ans);
+		bit b;
+		bit_init(&b);
+		ll ans = 0LL;
+		for (int i = n-1; i >= 0; --i) {
+			ans += bit_query(&b, a[i]-1);
+			bit_update(&b, a[i], 1);
+			
 		}
-		printf("%lld\n", (n+1)*(n)/6);
+		printf("%lld\n", ans);
 	}
-    return 0;
+	return 0;
 }
 

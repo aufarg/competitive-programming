@@ -61,22 +61,29 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+#define MAXN 5000
+int f[MAXN+5], m[MAXN+5];
+
 int main(){
-	int ntc;
-	scanf("%d", &ntc);
-	while (ntc--) {
-		ll n;
-		scanf("%lld", &n);
-		if (n == 0) {
-			puts("0");
+	int n;
+	scanf("%d", &n);
+	for (int i = 0; i < n; ++i) {
+		int a, b;
+		string s;
+		cin >> s >> a >> b;
+		bool female = false;
+		if (s[0] == 'F') female = true;
+		for (int j = a; j <= b; ++j) {
+			if (female) f[j]++;
+			else m[j]++;
 		}
-		else {
-			ll h = (n-1)/2;
-			ll ans = h*(h+1) + ((n%2) ? 0 : 1);
-			printf("%lld\n", ans);
-		}
-		printf("%lld\n", (n+1)*(n)/6);
 	}
+	int ans = 0;
+	for (int i = 1; i <= 366; ++i) {
+		int d = min(f[i], m[i]);
+		ans = max(ans, 2*d);
+	}
+    cout << ans << endl;
     return 0;
 }
 

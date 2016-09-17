@@ -61,22 +61,30 @@ inline void OPEN(const string &s) {
 
 /* -------------- end of DELAPAN.3gp's template -------------- */
 
+#define INF 100000000
+
 int main(){
-	int ntc;
-	scanf("%d", &ntc);
-	while (ntc--) {
-		ll n;
-		scanf("%lld", &n);
-		if (n == 0) {
-			puts("0");
+    int n, m;
+    scanf("%d %d", &n, &m);
+
+	int l = 1, r = 3*(m+n);
+	int ans = r;
+	for (int bs = 0; bs <= 50; ++bs) {
+		int mid = (l+r) / 2;
+		int six = mid / 6;
+		int h_n = mid / 2 - mid / 6;
+		int h_m = mid / 3 - mid / 6;
+		int d_n = max(0, n - h_n);
+		int d_m = max(0, m - h_m);
+		if (d_n + d_m <= six) {
+			r = mid;
+			ans = min(ans, mid);
 		}
 		else {
-			ll h = (n-1)/2;
-			ll ans = h*(h+1) + ((n%2) ? 0 : 1);
-			printf("%lld\n", ans);
+			l = mid+1;
 		}
-		printf("%lld\n", (n+1)*(n)/6);
 	}
-    return 0;
+
+	printf("%d\n", ans);
 }
 
