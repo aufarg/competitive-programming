@@ -15,7 +15,7 @@ struct MCMF {
   vector< vector< int > > adj;
   vector< int > par;
   vector< Edge > vEdge;
-  vector< long long > dist;
+  vector< int > dist;
   MCMF(int _n, int _s, int _t) : n(_n), adj(n), s(_s), t(_t) {
   }
   void addEdge(int from, int to, int cap, int cost) {
@@ -23,14 +23,14 @@ struct MCMF {
     adj[to].push_back(vEdge.size());
     vEdge.push_back(Edge(from, to, cap, 0, cost));
   }
-  long long augment(int v, int minflow = inf) {
+  int augment(int v, int minflow = inf) {
     if(v == s) {
       return minflow;
     }
     if(par[v] < 0) {
       return 0;
     }
-    long long flow;
+    int flow;
     Edge &e = vEdge[par[v]];
     if(v == e.from) {
       flow = augment(e.to, min(minflow, e.flow));
@@ -42,15 +42,15 @@ struct MCMF {
     }
     return flow;
   }
-  long long findingPath() {
+  int findingPath() {
     //dijkstra
-    set< pair< long long , int > > st;
+    set< pair< int , int > > st;
     dist.assign(n, inf);
     par.assign(n, -1);
     dist[s] = 0;
     st.insert(make_pair(dist[s], s));
     while(!st.empty()) {
-      set< pair< long long, int > >::iterator begin = st.begin();
+      set< pair< int, int > >::iterator begin = st.begin();
       int v = begin->second;
       st.erase(begin);
       for(int i = 0; i<adj[v].size(); i++) {
@@ -75,9 +75,9 @@ struct MCMF {
     }
     return augment(t, inf);
   }
-  pair< long long, long long > EdmondKarp() {
-    long long maxflow = 0, mincost = 0;
-    long long flow;
+  pair< int, int > EdmondKarp() {
+    int maxflow = 0, mincost = 0;
+    int flow;
     while(flow = findingPath()) {
       maxflow += flow;
       mincost += flow * dist[t];
