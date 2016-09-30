@@ -11,7 +11,7 @@ struct Edge
     Edge(int _t, int _c, int _w, int _r): t(_t), c(_c), w(_w), r(_r) {};
 };
 
-int pot[MAXN+5], prv[MAXN+5], dist[MAXN+5];
+int pot[MAXN+5], prv[MAXN+5], dist[MAXN+5], vis[MAXN+5];
 vector<Edge> edge[MAXN+5];
 
 pair<int, int> mcmf(int n, int s, int t)
@@ -21,13 +21,15 @@ pair<int, int> mcmf(int n, int s, int t)
     while (true) {
         priority_queue<pair<int, int> > pq;
         fill(dist, dist+n, INF);
+        fill(vis, vis+n, 0);
         pq.push(make_pair(0, s));
         dist[s] = 0;
         while (!pq.empty()) {
             pair<int, int> top = pq.top();
             pq.pop();
             int v = top.second, c = -top.first;
-            if (c != dist[v]) continue;
+            if (vis[v]) continue;
+            vis[v] = 1;
             for (int i = 0; i < edge[v].size(); ++i) {
                 Edge &e = edge[v][i];
                 int u = e.t;
