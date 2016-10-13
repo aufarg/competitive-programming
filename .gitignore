@@ -11,3 +11,5 @@
 
 # Reignore this files
 **/Practices
+
+!*.md
